@@ -273,6 +273,7 @@ class TMXSerializer(object):
                 image=None,
             )
         tileset._read_first_gid = int(elem.attrib.pop('firstgid', 0))
+        tileset.tilecount = int(elem.attrib.pop('tilecount', 0))
         assert not elem.attrib, (
                 'Unexpected tileset attributes: %s' % elem.attrib)
         for subelem in elem:
