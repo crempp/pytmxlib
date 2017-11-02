@@ -273,6 +273,8 @@ class TMXSerializer(object):
                 image=None,
             )
         tileset._read_first_gid = int(elem.attrib.pop('firstgid', 0))
+        tileset.tilecount = int(elem.attrib.pop('tilecount', 0))
+        tileset.collums =  int(elem.attrib.pop('columns', 0))
         assert not elem.attrib, (
                 'Unexpected tileset attributes: %s' % elem.attrib)
         for subelem in elem:
@@ -535,8 +537,12 @@ class TMXSerializer(object):
                 opacity=float(elem.attrib.pop('opacity', 1)),
                 visible=bool(int(elem.attrib.pop('visible', 1))),
                 color=color)
-        layer_size = (int(elem.attrib.pop('width')),
+        try:
+            layer_size = (int(elem.attrib.pop('width')),
                 int(elem.attrib.pop('height')))
+        except KeyError:
+                layer_size = map.size
+
         assert layer_size == map.size
         assert not elem.attrib, (
             'Unexpected object layer attributes: %s' % elem.attrib)
@@ -549,6 +555,7 @@ class TMXSerializer(object):
                     )
                 x = int(subelem.attrib.pop('x'))
                 y = int(subelem.attrib.pop('y'))
+                subelem_id = int(subelem.attrib.pop('id',0))
 
                 def put(attr_type, attr_name, arg_name):
                     attr = subelem.attrib.pop(attr_name, None)
