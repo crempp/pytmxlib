@@ -168,7 +168,7 @@ class TMXSerializer(object):
     @load_method
     def map_from_element(self, cls, root, base_path):
         assert root.tag == 'map'
-        assert root.attrib.pop('version') == '1.0', 'Bad TMX file version'
+#        assert root.attrib.pop('version') == '1.0', 'Bad TMX file version'
 
         background_color = root.attrib.pop('backgroundcolor', None)
         if background_color:
@@ -195,6 +195,9 @@ class TMXSerializer(object):
         # Seen first in Tiled 1.1.4
         tiledversion = root.attrib.pop('tiledversion', None)
         inf = root.attrib.pop('infinite', None)
+        # First seen in Tiled 1.2.x
+        tiledversion_2 = root.attrib.pop('version', None)
+        nextlayerid = root.attrib.pop('nextlayerid', None)
 
         assert not root.attrib, 'Unexpected map attributes: %s' % root.attrib
         map = cls(**args)
@@ -425,6 +428,7 @@ class TMXSerializer(object):
                 visible=bool(int(elem.attrib.pop('visible', 1))))
         layer_size = (int(elem.attrib.pop('width')),
                 int(elem.attrib.pop('height')))
+        layerid = int(elem.attrib.pop('id', 0))
         assert layer_size == map.size
         assert not elem.attrib, (
             'Unexpected tile layer attributes: %s' % elem.attrib)
@@ -546,6 +550,8 @@ class TMXSerializer(object):
                 int(elem.attrib.pop('height')))
         except KeyError:
                 layer_size = map.size
+
+        layerid = int(elem.attrib.pop('id', 0))
 
         assert layer_size == map.size
         assert not elem.attrib, (
