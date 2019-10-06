@@ -281,7 +281,9 @@ class TMXSerializer(object):
             )
         tileset._read_first_gid = int(elem.attrib.pop('firstgid', 0))
         tileset.tilecount = int(elem.attrib.pop('tilecount', 0))
-        tileset.collums =  int(elem.attrib.pop('columns', 0))
+        tileset.columns =  int(elem.attrib.pop('columns', 0))
+        tileset.version = elem.attrib.pop('version', '0')
+        tileset.tiled_version = elem.attrib.pop('tiledversion', '0')
         assert not elem.attrib, (
                 'Unexpected tileset attributes: %s' % elem.attrib)
         for subelem in elem:
@@ -694,7 +696,15 @@ class TMXSerializer(object):
         for prop in elem:
             assert prop.tag == 'property'
             name = prop.attrib.pop('name')
-            value = prop.attrib.pop('value')
+            type = prop.attrib.pop('type', 'string')
+            if type == 'bool':
+                value = True if prop.attrib.pop('value') == 'true' else False
+            elif type == 'int':
+                value = int(prop.attrib.pop('value'))
+            elif type == 'float':
+                value = float(prop.attrib.pop('value'))
+            else:
+                value = prop.attrib.pop('value')
             properties[name] = value
             assert not prop.attrib, (
                     'Unexpected property attributes: %s' % prop.attrib)
